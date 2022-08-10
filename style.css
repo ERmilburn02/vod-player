@@ -48,6 +48,7 @@ body {
 #chat>div:not(:last-child) {
     margin-bottom: 1em;
 }
+
 .display-name {
     font-weight: bold;
 }
@@ -56,15 +57,77 @@ body {
     margin-right: .35em;
 }
 
-
 .fragment {
     color: rgb(200, 200, 200);
-    word-break: break-word; 
+    word-break: break-word;
+}
+
+.Highlighted {
+
+    position: relative;
+    left: 5px;
+    background-color: rgb(70, 70, 70);
+}
+
+.Highlighted::before {
+    position: absolute;
+    display: inline-block;
+    content: "";
+    background-color: purple;
+    width: 5px;
+    height: 100%;
+    left: -5px;
+}
+
+.emoticon {
+    position: relative;
+    bottom: -8px;
 }
 
 .time {
     color: rgb(100, 100, 100);
     margin-right: .35em;
+}
+
+.shareDropDown {
+    position: relative;
+    background-color: rgb(85, 85, 85);
+    margin-inline-start: 10px;
+    width: 12em;
+    height: 2em;
+    text-align: center;
+    line-height: 2em;
+    z-index: 1022;
+    display: block;
+    border-radius: 5px;
+    border-style: none;
+}
+
+.dropDownOptions {
+    position: absolute;
+    bottom: 0;
+    left: 1em;
+    top: 2em;
+    background-color: rgb(100, 100, 100);
+    width: 10em;
+    height: 2em;
+    display: none;
+}
+
+.dropDownOptions:hover {
+    filter: brightness(1.5);
+    display: block;
+    cursor: pointer;
+}
+
+.dropDownOptions:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-top: 2em;
+}
+
+.shareDropDown:hover>.dropDownOptions {
+    display: block;
 }
 
 @media (max-aspect-ratio: 1/1) {

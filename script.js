@@ -30,6 +30,7 @@ const r = () => {
         history.replaceState(null, "", (url.origin + '?' + params.toString()))
     };
 
+
     const cap = 100; //The maximum comments
 
     let comments = [];
@@ -37,6 +38,28 @@ const r = () => {
     const scroll = () => {
         chatElement.scrollTop = chatElement.scrollHeight;
     };
+    
+    const copyUrl = () => {
+        const urlWithoutTime  = document.URL.slice(0 ,document.URL.indexOf('&min'));
+        navigator.clipboard.writeText(urlWithoutTime)
+        
+    }
+    const copyUrlWithTime = () => {
+        navigator.clipboard.writeText(document.URL)
+    }
+
+    const shareButton = document.querySelector('.shareDropDown');
+    const shareButtonNoTime = document.createElement('div');
+    const shareButtonTime = document.createElement('div');
+        shareButtonNoTime.classList.add('dropDownOptions')
+        shareButtonNoTime.innerText = ('No timestamp')
+        shareButtonTime.classList.add('dropDownOptions')
+        shareButtonTime.innerText = ('Current timestamp')
+        shareButtonNoTime.addEventListener('click', copyUrl);
+        shareButtonTime.addEventListener('click', copyUrlWithTime);
+        shareButton.appendChild(shareButtonNoTime)
+        shareButton.appendChild(shareButtonTime)
+
 
     const renderChat = () => {
         chatElement.innerHTML = "";
@@ -66,28 +89,36 @@ const r = () => {
             const dividerElement = document.createElement("span");
             dividerElement.innerText = ":";
             dividerElement.classList.add("divider");
+
             const fragmentsToAppend = []
+
             for (fragment of comment.message.fragments) {
                 const fragmentElement = document.createElement("span");
-                if (!('emoticon' in fragment)) {
-                    fragmentElement.innerText = fragment.text;
-                    fragmentElement.classList.add("fragment");
-                    fragmentsToAppend.push(fragmentElement)
-                } else {
+                fragmentElement.classList.add("fragment");
+                if ("emoticon" in fragment) {
                     //build and append the Emotes
                     const emoteElement = document.createElement("img")
                     emoteElement.src = (`https://static-cdn.jtvnw.net/emoticons/v1/${fragment.emoticon.emoticon_id}/1.0`)
                     emoteElement.alt = fragment.text
                     emoteElement.classList.add("emoticon")
-                    fragmentElement.classList.add("fragment");
                     fragmentElement.appendChild(emoteElement)
-                    fragmentsToAppend.push(fragmentElement);
                 }
-            }
+                else {
+                    fragmentElement.innerText = fragment.text;
+                }
+
+                const commentMsgId = comment.message.user_notice_params;
+                if(commentMsgId["msg-id"] != undefined){
+                    commentElement.classList.add("Highlighted")
+                }
+                fragmentsToAppend.push(fragmentElement)
+            }; 
             commentElement.appendChild(timeElement);
             commentElement.appendChild(displayNameElement);
             commentElement.appendChild(dividerElement);
-            commentElement.appendChild(...fragmentsToAppend);
+            fragmentsToAppend.forEach((fragmentToAppend) => {
+                commentElement.appendChild(fragmentToAppend);
+            })
             chatElement.appendChild(commentElement);
         }
         scroll();
