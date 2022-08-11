@@ -62,6 +62,13 @@ const r = () => {
 
 
     const renderChat = () => {
+        const getTimeString = (time) => {
+            const hours = Math.floor(time / 60 / 60);
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time);
+            return`${hours}:${`${(minutes - hours * 60)}`.padStart(2, 0)}:${`${(seconds - minutes * 60)}`.padStart(2, 0)}`;
+        };
+
         chatElement.innerHTML = "";
         const renderableComments = [];
         for (const comment of comments) {
@@ -75,10 +82,7 @@ const r = () => {
             const commentElement = document.createElement("p");
 
             const timeElement = document.createElement("span");
-            const hours = Math.floor(comment.content_offset_seconds / 60 / 60);
-            const minutes = Math.floor(comment.content_offset_seconds / 60);
-            const seconds = Math.floor(comment.content_offset_seconds);
-            timeElement.innerText = `${hours}:${`${(minutes - hours * 60)}`.padStart(2, 0)}:${`${(seconds - minutes * 60)}`.padStart(2, 0)}`;
+            timeElement.innerText = getTimeString(comment.content_offset_seconds);
             timeElement.classList.add("time");
 
             const displayNameElement = document.createElement("span");
@@ -107,18 +111,20 @@ const r = () => {
                     fragmentElement.innerText = fragment.text;
                 }
 
-                const commentMsgId = comment.message.user_notice_params;
-                if(commentMsgId["msg-id"] != undefined){
-                    commentElement.classList.add("Highlighted");
-                }
                 fragmentsToAppend.push(fragmentElement);
             }; 
+
             commentElement.appendChild(timeElement);
             commentElement.appendChild(displayNameElement);
             commentElement.appendChild(dividerElement);
             fragmentsToAppend.forEach((fragmentToAppend) => {
                 commentElement.appendChild(fragmentToAppend);
             });
+
+            const commentMsgId = comment.message.user_notice_params;
+            if(commentMsgId["msg-id"] != undefined){
+                commentElement.classList.add("Highlighted");
+            }
 
             if(comment.message.is_action){
                 commentElement.classList.add("action");
