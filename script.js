@@ -20,21 +20,21 @@ const r = () => {
 
     const createElement = (tag, properties) => {
         const element = document.createElement(tag);
-        if(properties.classList){
-            if(typeof properties.classList === "string"){
-                for(const className of properties.classList.split(" "))
+        if (properties.classList) {
+            if (typeof properties.classList === "string") {
+                for (const className of properties.classList.split(" "))
                     element.classList.add(className);
             }
-            else if (Array.isArray(properties.classList)){ 
-                for(const className of properties.classList)
+            else if (Array.isArray(properties.classList)) {
+                for (const className of properties.classList)
                     element.classList.add(className);
             }
         }
-        if(properties.style){
-            for(const stylePropertyName in properties.style)
+        if (properties.style) {
+            for (const stylePropertyName in properties.style)
                 element.style.setProperty(stylePropertyName, properties.style[stylePropertyName]);
         }
-        if(properties.text){
+        if (properties.text) {
             element.innerText = properties.text;
         }
         return element;
@@ -60,30 +60,30 @@ const r = () => {
     const scroll = () => {
         chatElement.scrollTop = chatElement.scrollHeight;
     };
-    
+
     const copyUrl = () => {
-        const urlWithoutTime  = document.URL.slice(0 ,document.URL.indexOf("&min"));
+        const urlWithoutTime = document.URL.slice(0, document.URL.indexOf("&min"));
         navigator.clipboard.writeText(urlWithoutTime);
-        
+
     };
     const copyUrlWithTime = () => {
         navigator.clipboard.writeText(document.URL);
     };
 
     const shareButton = document.querySelector(".shareDropDown");
-    const shareButtonNoTime = createElement("div", {text: "No timestamp", classList: ["dropDownOptions"]});
-    const shareButtonTime = createElement("div", {text: "Current timestamp", classList: ["dropDownOptions"]});
-        shareButtonNoTime.addEventListener("click", copyUrl);
-        shareButtonTime.addEventListener("click", copyUrlWithTime);
-        shareButton.appendChild(shareButtonNoTime);
-        shareButton.appendChild(shareButtonTime);
+    const shareButtonNoTime = createElement("div", { text: "No timestamp", classList: ["dropDownOptions"] });
+    const shareButtonTime = createElement("div", { text: "Current timestamp", classList: ["dropDownOptions"] });
+    shareButtonNoTime.addEventListener("click", copyUrl);
+    shareButtonTime.addEventListener("click", copyUrlWithTime);
+    shareButton.appendChild(shareButtonNoTime);
+    shareButton.appendChild(shareButtonTime);
 
 
     const getTimeString = (time) => {
         const hours = Math.floor(time / 60 / 60);
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time);
-        return`${hours}:${`${(minutes - hours * 60)}`.padStart(2, 0)}:${`${(seconds - minutes * 60)}`.padStart(2, 0)}`;
+        return `${hours}:${`${(minutes - hours * 60)}`.padStart(2, 0)}:${`${(seconds - minutes * 60)}`.padStart(2, 0)}`;
     };
 
     const renderChat = () => {
@@ -99,20 +99,20 @@ const r = () => {
         for (const comment of renderableComments) {
             const commentElement = document.createElement("p");
 
-            const timeElement = createElement("span", {text: getTimeString(comment.content_offset_seconds), classList: ["time"]});
+            const timeElement = createElement("span", { text: getTimeString(comment.content_offset_seconds), classList: ["time"] });
 
             const displayNameElement = createElement("span", {
-                text: comment.commenter.display_name, 
-                classList: ["display-name"], 
-                style: {color: comment.message.user_color}
+                text: comment.commenter.display_name,
+                classList: ["display-name"],
+                style: { color: comment.message.user_color }
             });
 
-            const dividerElement = createElement("span", {text: comment.message.is_action ? "" : ":", classList: ["divider"]});
+            const dividerElement = createElement("span", { text: comment.message.is_action ? "" : ":", classList: ["divider"] });
 
             const fragmentsToAppend = [];
 
             for (fragment of comment.message.fragments) {
-                const fragmentElement = createElement("span", {classList: ["fragment"]});
+                const fragmentElement = createElement("span", { classList: ["fragment"] });
                 if ("emoticon" in fragment) {
                     //build and append the Emotes
                     const emoteElement = document.createElement("img");
@@ -126,7 +126,7 @@ const r = () => {
                 }
 
                 fragmentsToAppend.push(fragmentElement);
-            }; 
+            };
 
             commentElement.appendChild(timeElement);
             commentElement.appendChild(displayNameElement);
@@ -136,11 +136,11 @@ const r = () => {
             });
 
             const commentMsgId = comment.message.user_notice_params;
-            if(commentMsgId["msg-id"] != undefined){
+            if (commentMsgId["msg-id"] != undefined) {
                 commentElement.classList.add("Highlighted");
             }
 
-            if(comment.message.is_action){
+            if (comment.message.is_action) {
                 commentElement.classList.add("action");
             }
 
