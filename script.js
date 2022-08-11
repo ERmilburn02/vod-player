@@ -46,10 +46,10 @@ const r = () => {
         let params = url.searchParams;
         let currentMins = Math.floor(vodElement.currentTime / 60);
         let currentSecs = Math.round(vodElement.currentTime % 60);
-        params.set('mins', currentMins);
-        params.set('secs', currentSecs);
+        params.set("mins", currentMins);
+        params.set("secs", currentSecs);
 
-        history.replaceState(null, "", (url.origin + '?' + params.toString()));
+        history.replaceState(null, "", (url.origin + "?" + params.toString()));
     };
 
 
@@ -62,7 +62,7 @@ const r = () => {
     };
     
     const copyUrl = () => {
-        const urlWithoutTime  = document.URL.slice(0 ,document.URL.indexOf('&min'));
+        const urlWithoutTime  = document.URL.slice(0 ,document.URL.indexOf("&min"));
         navigator.clipboard.writeText(urlWithoutTime);
         
     };
@@ -70,11 +70,11 @@ const r = () => {
         navigator.clipboard.writeText(document.URL);
     };
 
-    const shareButton = document.querySelector('.shareDropDown');
-    const shareButtonNoTime = createElement('div', {text: 'No timestamp', classList: ["dropDownOptions"]});
-    const shareButtonTime = createElement('div', {text: 'Current timestamp', classList: ["dropDownOptions"]});
-        shareButtonNoTime.addEventListener('click', copyUrl);
-        shareButtonTime.addEventListener('click', copyUrlWithTime);
+    const shareButton = document.querySelector(".shareDropDown");
+    const shareButtonNoTime = createElement("div", {text: "No timestamp", classList: ["dropDownOptions"]});
+    const shareButtonTime = createElement("div", {text: "Current timestamp", classList: ["dropDownOptions"]});
+        shareButtonNoTime.addEventListener("click", copyUrl);
+        shareButtonTime.addEventListener("click", copyUrlWithTime);
         shareButton.appendChild(shareButtonNoTime);
         shareButton.appendChild(shareButtonTime);
 
