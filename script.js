@@ -87,7 +87,7 @@ const r = () => {
             displayNameElement.classList.add("display-name");
 
             const dividerElement = document.createElement("span");
-            dividerElement.innerText = ":";
+            dividerElement.innerText = comment.message.is_action ? "" : ":";
             dividerElement.classList.add("divider");
 
             const fragmentsToAppend = []
@@ -119,6 +119,11 @@ const r = () => {
             fragmentsToAppend.forEach((fragmentToAppend) => {
                 commentElement.appendChild(fragmentToAppend);
             })
+
+            if(comment.message.is_action){
+                commentElement.classList.add("action");
+            }
+
             chatElement.appendChild(commentElement);
         }
         scroll();

@@ -89,6 +89,10 @@ body {
     margin-right: .35em;
 }
 
+.action .fragment{
+    font-style: italic;
+}
+
 .shareDropDown {
     position: relative;
     background-color: rgb(85, 85, 85);
