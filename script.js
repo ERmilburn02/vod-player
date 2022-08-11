@@ -24,10 +24,10 @@ const r = () => {
         let params = url.searchParams;
         let currentMins = Math.floor(vodElement.currentTime / 60);
         let currentSecs = Math.round(vodElement.currentTime % 60);
-        params.set('mins', currentMins)
-        params.set('secs', currentSecs)
+        params.set('mins', currentMins);
+        params.set('secs', currentSecs);
 
-        history.replaceState(null, "", (url.origin + '?' + params.toString()))
+        history.replaceState(null, "", (url.origin + '?' + params.toString()));
     };
 
 
@@ -41,24 +41,24 @@ const r = () => {
     
     const copyUrl = () => {
         const urlWithoutTime  = document.URL.slice(0 ,document.URL.indexOf('&min'));
-        navigator.clipboard.writeText(urlWithoutTime)
+        navigator.clipboard.writeText(urlWithoutTime);
         
     }
     const copyUrlWithTime = () => {
-        navigator.clipboard.writeText(document.URL)
+        navigator.clipboard.writeText(document.URL);
     }
 
     const shareButton = document.querySelector('.shareDropDown');
     const shareButtonNoTime = document.createElement('div');
     const shareButtonTime = document.createElement('div');
-        shareButtonNoTime.classList.add('dropDownOptions')
-        shareButtonNoTime.innerText = ('No timestamp')
-        shareButtonTime.classList.add('dropDownOptions')
-        shareButtonTime.innerText = ('Current timestamp')
+        shareButtonNoTime.classList.add('dropDownOptions');
+        shareButtonNoTime.innerText = ('No timestamp');
+        shareButtonTime.classList.add('dropDownOptions');
+        shareButtonTime.innerText = ('Current timestamp');
         shareButtonNoTime.addEventListener('click', copyUrl);
         shareButtonTime.addEventListener('click', copyUrlWithTime);
-        shareButton.appendChild(shareButtonNoTime)
-        shareButton.appendChild(shareButtonTime)
+        shareButton.appendChild(shareButtonNoTime);
+        shareButton.appendChild(shareButtonTime);
 
 
     const renderChat = () => {
@@ -90,18 +90,18 @@ const r = () => {
             dividerElement.innerText = comment.message.is_action ? "" : ":";
             dividerElement.classList.add("divider");
 
-            const fragmentsToAppend = []
+            const fragmentsToAppend = [];
 
             for (fragment of comment.message.fragments) {
                 const fragmentElement = document.createElement("span");
                 fragmentElement.classList.add("fragment");
                 if ("emoticon" in fragment) {
                     //build and append the Emotes
-                    const emoteElement = document.createElement("img")
-                    emoteElement.src = (`https://static-cdn.jtvnw.net/emoticons/v1/${fragment.emoticon.emoticon_id}/1.0`)
-                    emoteElement.alt = fragment.text
-                    emoteElement.classList.add("emoticon")
-                    fragmentElement.appendChild(emoteElement)
+                    const emoteElement = document.createElement("img");
+                    emoteElement.src = (`https://static-cdn.jtvnw.net/emoticons/v1/${fragment.emoticon.emoticon_id}/1.0`);
+                    emoteElement.alt = fragment.text;
+                    emoteElement.classList.add("emoticon");
+                    fragmentElement.appendChild(emoteElement);
                 }
                 else {
                     fragmentElement.innerText = fragment.text;
@@ -109,16 +109,16 @@ const r = () => {
 
                 const commentMsgId = comment.message.user_notice_params;
                 if(commentMsgId["msg-id"] != undefined){
-                    commentElement.classList.add("Highlighted")
+                    commentElement.classList.add("Highlighted");
                 }
-                fragmentsToAppend.push(fragmentElement)
+                fragmentsToAppend.push(fragmentElement);
             }; 
             commentElement.appendChild(timeElement);
             commentElement.appendChild(displayNameElement);
             commentElement.appendChild(dividerElement);
             fragmentsToAppend.forEach((fragmentToAppend) => {
                 commentElement.appendChild(fragmentToAppend);
-            })
+            });
 
             if(comment.message.is_action){
                 commentElement.classList.add("action");
@@ -137,13 +137,13 @@ const r = () => {
     };
     vodElement.onseeked = () => {
         changeUrlForTimeStamp();  // Update only when seeked, up to evan
-    }
+    };
 
     vodElement.onloadeddata = () => {
         if (autoplay) {
             vodElement.play();
         }
-    }
+    };
 
     vodElement.src = mp4;
 
@@ -165,7 +165,7 @@ const r = () => {
     }
 
     const home = document.getElementById("home");
-    home.style = "display: none;"
+    home.style = "display: none;";
 };
 
 r();
