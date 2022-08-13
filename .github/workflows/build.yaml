@@ -41,19 +41,19 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install Dependencies
-      run: |
+      run:
         npm install
     - name: Build
       run:
         npm run build
 
     - name: Setup Pages
-        uses: actions/configure-pages@v1
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload entire repository
-          path: '.'
+      uses: actions/configure-pages@v1
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        # Upload entire repository
+        path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@main
