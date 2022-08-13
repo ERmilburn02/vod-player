@@ -56,6 +56,8 @@ const r = () => {
     const cap = 100; //The maximum comments
 
     let comments = [];
+    let globalBadges = {};
+    let channelBadges = {};
 
     const scroll = () => {
         chatElement.scrollTop = chatElement.scrollHeight;
@@ -86,6 +88,30 @@ const r = () => {
         return `${hours}:${`${(minutes - hours * 60)}`.padStart(2, 0)}:${`${(seconds - minutes * 60)}`.padStart(2, 0)}`;
     };
 
+    const getBadgeInfo = (badgeName, version) => {
+        if (channelBadges[badgeName]) {
+            const badgeInfo = channelBadges[badgeName].versions[version];
+            if (badgeInfo) {
+                return {
+                    src: badgeInfo.image_url_1x,
+                    description: badgeInfo.description,
+                    clickUrl: badgeInfo.click_url
+                };
+            }
+        }
+        else if (globalBadges[badgeName]) {
+            const badgeInfo = globalBadges[badgeName].versions[version];
+            if (badgeInfo) {
+                return {
+                    src: badgeInfo.image_url_1x,
+                    description: badgeInfo.description,
+                    clickUrl: badgeInfo.click_url
+                };
+            }
+        }
+        return null;
+    };
+
     const renderChat = () => {
         chatElement.innerHTML = "";
         const renderableComments = [];
@@ -101,13 +127,37 @@ const r = () => {
 
             const timeElement = createElement("span", { text: getTimeString(comment.content_offset_seconds), classList: ["time"] });
 
+            const badgesToAppend = [];
+            if (comment.message.user_badges) {
+                for (const badge of comment.message.user_badges) {
+                    const badgeInfo = getBadgeInfo(badge._id, badge.version);
+                    if (badgeInfo !== null) {
+                        const badgeImageElement = document.createElement("img");
+                        badgeImageElement.src = (badgeInfo.src);
+                        badgeImageElement.alt = badgeInfo.description;
+
+                        let badgeElement = badgeImageElement;
+                        if (badgeInfo.clickUrl.length > 0) {
+                            const badgeAnchorElement = createElement("a", { classList: ["badge"] });
+                            badgeAnchorElement.href = badgeInfo.clickUrl;
+                            badgeAnchorElement.target = "_blank";
+                            badgeAnchorElement.appendChild(badgeImageElement);
+                            badgeElement = badgeAnchorElement;
+                        }
+                        badgeElement.classList.add("badge");
+                        badgeElement.title = badgeInfo.description;
+                        badgesToAppend.push(badgeElement);
+                    }
+                }
+            }
+
             const displayNameElement = createElement("span", {
                 text: comment.commenter.display_name,
                 classList: ["display-name"],
                 style: { color: comment.message.user_color }
             });
 
-            const dividerElement = createElement("span", { text: comment.message.is_action ? "" : ":", classList: ["divider"] });
+            const dividerElement = createElement("span", { text: comment.message.is_action ? " " : ": ", classList: ["divider"] });
 
             const fragmentsToAppend = [];
 
@@ -129,6 +179,9 @@ const r = () => {
             };
 
             commentElement.appendChild(timeElement);
+            badgesToAppend.forEach((badgetoAppend) => {
+                commentElement.appendChild(badgetoAppend);
+            });
             commentElement.appendChild(displayNameElement);
             commentElement.appendChild(dividerElement);
             fragmentsToAppend.forEach((fragmentToAppend) => {
@@ -180,6 +233,19 @@ const r = () => {
             res.json().then((data) => {
                 comments = data.comments;
                 renderChat();
+                if (comments.length > 0) {
+                    fetch(`https://badges.twitch.tv/v1/badges/channels/${comments[0].channel_id}/display?language=en`).then((res) => {
+                        res.json().then((data) => {
+                            channelBadges = data.badge_sets;
+                        });
+                    });
+                }
+            });
+        });
+
+        fetch("https://badges.twitch.tv/v1/badges/global/display?language=en").then((res) => {
+            res.json().then((data) => {
+                globalBadges = data.badge_sets;
             });
         });
     }

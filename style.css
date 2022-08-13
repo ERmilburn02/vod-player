@@ -53,10 +53,6 @@ body {
     font-weight: bold;
 }
 
-.divider {
-    margin-right: .35em;
-}
-
 .fragment {
     color: rgb(200, 200, 200);
     word-break: break-word;
@@ -87,6 +83,14 @@ body {
 .time {
     color: rgb(100, 100, 100);
     margin-right: .35em;
+}
+
+.badge{
+    margin-right: 0.3em;
+    position: relative;
+    border-radius: 3px;
+    vertical-align: middle;
+    max-width: 100%;
 }
 
 .action .fragment{
