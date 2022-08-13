@@ -1,46 +1,5 @@
-interface Comment {
-    _id: string;
-    channel_id: string;
-    commenter: {
-        _id: string;
-        bio: string;
-        created_at: string;
-        display_name: string;
-        logo: string;
-        name: string;
-        type: string;
-        updated_at: string;
-    };
-    content_id: string;
-    content_offset_seconds: number;
-    content_type: string;
-    created_at: string;
-    message: {
-        body: string;
-        emoticons?: {
-            _id: string;
-            begin: number;
-            end: number;
-        }[]
-        fragments: {
-            text: string;
-            emoticon?: {
-                emoticon_id: string;
-                emoticon_set_id: string;
-            }
-        }[];
-        is_action: boolean;
-        user_badges?: {
-            _id: string;
-            version: string;
-        }[];
-        user_color: string;
-        user_notice_params: { [name: string]: string | undefined };
-    },
-    source: string;
-    state: string;
-    updated_at: string;
-}
+import Chat from "./chat";
+import { createElement } from "./elements";
 
 const r = () => {
     // Grabbing variables from the Url object
@@ -62,28 +21,6 @@ const r = () => {
 
     vodElement.currentTime = (Math.floor(parseFloat(timeMins ?? "0") * 60) + Math.floor(parseFloat(timeSecs ?? "0")));
 
-    const createElement = <K extends keyof HTMLElementTagNameMap>(tag: K, properties: {[name: string]: any}): HTMLElementTagNameMap[K] => {
-        const element = document.createElement(tag);
-        if (properties.classList) {
-            if (typeof properties.classList === "string") {
-                for (const className of properties.classList.split(" "))
-                    element.classList.add(className);
-            }
-            else if (Array.isArray(properties.classList)) {
-                for (const className of properties.classList)
-                    element.classList.add(className);
-            }
-        }
-        if (properties.style) {
-            for (const stylePropertyName in properties.style)
-                element.style.setProperty(stylePropertyName, properties.style[stylePropertyName]);
-        }
-        if (properties.text) {
-            element.innerText = properties.text;
-        }
-        return element;
-    };
-
     const changeUrlForTimeStamp = () => {
         //building the parameters for the timestamp
         //then setting state so you can send the url after seekedorupdated
@@ -96,19 +33,11 @@ const r = () => {
         history.replaceState(null, "", (url.origin + "?" + params.toString()));
     };
 
-
-    const cap = 100; //The maximum comments
-
-    let comments: Comment[] = [];
-
-    const scroll = () => {
-        chatElement.scrollTop = chatElement.scrollHeight;
-    };
+    let chat: Chat | null = null;
 
     const copyUrl = () => {
         const urlWithoutTime = document.URL.slice(0, document.URL.indexOf("&min"));
         navigator.clipboard.writeText(urlWithoutTime);
-
     };
     const copyUrlWithTime = () => {
         navigator.clipboard.writeText(document.URL);
@@ -122,80 +51,9 @@ const r = () => {
     shareButton.appendChild(shareButtonNoTime);
     shareButton.appendChild(shareButtonTime);
 
-
-    const getTimeString = (time: number) => {
-        const hours = Math.floor(time / 60 / 60);
-        const minutes = Math.floor(time / 60);
-        const seconds = Math.floor(time);
-        return `${hours}:${`${(minutes - hours * 60)}`.padStart(2, "0")}:${`${(seconds - minutes * 60)}`.padStart(2, "0")}`;
-    };
-
-    const renderChat = () => {
-        chatElement.innerHTML = "";
-        const renderableComments = [];
-        for (const comment of comments) {
-            if (comment.content_offset_seconds > vodElement.currentTime) {
-                break;
-            }
-            renderableComments.push(comment);
-        }
-        renderableComments.splice(0, renderableComments.length - cap);
-        for (const comment of renderableComments) {
-            const commentElement = document.createElement("p");
-
-            const timeElement = createElement("span", { text: getTimeString(comment.content_offset_seconds), classList: ["time"] });
-
-            const displayNameElement = createElement("span", {
-                text: comment.commenter.display_name,
-                classList: ["display-name"],
-                style: { color: comment.message.user_color }
-            });
-
-            const dividerElement = createElement("span", { text: comment.message.is_action ? "" : ":", classList: ["divider"] });
-
-            const fragmentsToAppend = [];
-
-            for (const fragment of comment.message.fragments) {
-                const fragmentElement = createElement("span", { classList: ["fragment"] });
-                if (fragment.emoticon) {
-                    //build and append the Emotes
-                    const emoteElement = document.createElement("img");
-                    emoteElement.src = (`https://static-cdn.jtvnw.net/emoticons/v1/${fragment.emoticon.emoticon_id}/1.0`);
-                    emoteElement.alt = fragment.text;
-                    emoteElement.classList.add("emoticon");
-                    fragmentElement.appendChild(emoteElement);
-                }
-                else {
-                    fragmentElement.innerText = fragment.text;
-                }
-
-                fragmentsToAppend.push(fragmentElement);
-            };
-
-            commentElement.appendChild(timeElement);
-            commentElement.appendChild(displayNameElement);
-            commentElement.appendChild(dividerElement);
-            fragmentsToAppend.forEach((fragmentToAppend) => {
-                commentElement.appendChild(fragmentToAppend);
-            });
-
-            const commentMsgId = comment.message.user_notice_params;
-            if (commentMsgId["msg-id"] != undefined) {
-                commentElement.classList.add("Highlighted");
-            }
-
-            if (comment.message.is_action) {
-                commentElement.classList.add("action");
-            }
-
-            chatElement.appendChild(commentElement);
-        }
-        scroll();
-    };
-
     vodElement.ontimeupdate = () => {
         if (hasJSON) {
-            renderChat();
+            chat?.render(vodElement.currentTime);
         }
         changeUrlForTimeStamp(); // Update constantly
     };
@@ -211,19 +69,17 @@ const r = () => {
 
     vodElement.src = mp4;
 
-    chatElement.addEventListener("scroll", () => {
-        scroll();
-    });
+    
 
     addEventListener("resize", () => {
-        scroll();
+        chat?.scroll();
     });
 
     if (hasJSON) {
         fetch(json).then((res) => {
             res.json().then((data) => {
-                comments = data.comments;
-                renderChat();
+                chat = new Chat(data.comments, chatElement);
+                chat?.render(vodElement.currentTime);
             });
         });
     }

@@ -1,0 +1,1 @@
+export const commentCap = 100;
