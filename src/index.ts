@@ -1,3 +1,47 @@
+interface Comment {
+    _id: string;
+    channel_id: string;
+    commenter: {
+        _id: string;
+        bio: string;
+        created_at: string;
+        display_name: string;
+        logo: string;
+        name: string;
+        type: string;
+        updated_at: string;
+    };
+    content_id: string;
+    content_offset_seconds: number;
+    content_type: string;
+    created_at: string;
+    message: {
+        body: string;
+        emoticons?: {
+            _id: string;
+            begin: number;
+            end: number;
+        }[]
+        fragments: {
+            text: string;
+            emoticon?: {
+                emoticon_id: string;
+                emoticon_set_id: string;
+            }
+        }[];
+        is_action: boolean;
+        user_badges?: {
+            _id: string;
+            version: string;
+        }[];
+        user_color: string;
+        user_notice_params: { [name: string]: string | undefined };
+    },
+    source: string;
+    state: string;
+    updated_at: string;
+}
+
 const r = () => {
     // Grabbing variables from the Url object
     const url = new URL(window.location.href);
@@ -13,12 +57,12 @@ const r = () => {
 
     const hasJSON = (json !== null && json !== "");
 
-    const vodElement = document.getElementById("vod");
-    const chatElement = document.getElementById("chat");
+    const vodElement = <HTMLVideoElement>document.getElementById("vod");
+    const chatElement = <HTMLDivElement>document.getElementById("chat");
 
-    vodElement.currentTime = (Math.floor(timeMins * 60) + Math.floor(timeSecs));
+    vodElement.currentTime = (Math.floor(parseFloat(timeMins ?? "0") * 60) + Math.floor(parseFloat(timeSecs ?? "0")));
 
-    const createElement = (tag, properties) => {
+    const createElement = <K extends keyof HTMLElementTagNameMap>(tag: K, properties: {[name: string]: any}): HTMLElementTagNameMap[K] => {
         const element = document.createElement(tag);
         if (properties.classList) {
             if (typeof properties.classList === "string") {
@@ -46,8 +90,8 @@ const r = () => {
         let params = url.searchParams;
         let currentMins = Math.floor(vodElement.currentTime / 60);
         let currentSecs = Math.round(vodElement.currentTime % 60);
-        params.set("mins", currentMins);
-        params.set("secs", currentSecs);
+        params.set("mins", currentMins.toString());
+        params.set("secs", currentSecs.toString());
 
         history.replaceState(null, "", (url.origin + "?" + params.toString()));
     };
@@ -55,7 +99,7 @@ const r = () => {
 
     const cap = 100; //The maximum comments
 
-    let comments = [];
+    let comments: Comment[] = [];
 
     const scroll = () => {
         chatElement.scrollTop = chatElement.scrollHeight;
@@ -70,7 +114,7 @@ const r = () => {
         navigator.clipboard.writeText(document.URL);
     };
 
-    const shareButton = document.querySelector(".shareDropDown");
+    const shareButton = document.querySelector<HTMLButtonElement>(".shareDropDown")!;
     const shareButtonNoTime = createElement("div", { text: "No timestamp", classList: ["dropDownOptions"] });
     const shareButtonTime = createElement("div", { text: "Current timestamp", classList: ["dropDownOptions"] });
     shareButtonNoTime.addEventListener("click", copyUrl);
@@ -79,11 +123,11 @@ const r = () => {
     shareButton.appendChild(shareButtonTime);
 
 
-    const getTimeString = (time) => {
+    const getTimeString = (time: number) => {
         const hours = Math.floor(time / 60 / 60);
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time);
-        return `${hours}:${`${(minutes - hours * 60)}`.padStart(2, 0)}:${`${(seconds - minutes * 60)}`.padStart(2, 0)}`;
+        return `${hours}:${`${(minutes - hours * 60)}`.padStart(2, "0")}:${`${(seconds - minutes * 60)}`.padStart(2, "0")}`;
     };
 
     const renderChat = () => {
@@ -111,9 +155,9 @@ const r = () => {
 
             const fragmentsToAppend = [];
 
-            for (fragment of comment.message.fragments) {
+            for (const fragment of comment.message.fragments) {
                 const fragmentElement = createElement("span", { classList: ["fragment"] });
-                if ("emoticon" in fragment) {
+                if (fragment.emoticon) {
                     //build and append the Emotes
                     const emoteElement = document.createElement("img");
                     emoteElement.src = (`https://static-cdn.jtvnw.net/emoticons/v1/${fragment.emoticon.emoticon_id}/1.0`);
@@ -184,7 +228,7 @@ const r = () => {
         });
     }
 
-    const home = document.getElementById("home");
+    const home = document.getElementById("home")!;
     home.style.setProperty("display", "none");
 };
 
