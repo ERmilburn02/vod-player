@@ -89,9 +89,9 @@ const r = () => {
     };
 
     const getBadgeInfo = (badgeName, version) => {
-        if(channelBadges[badgeName]){
+        if (channelBadges[badgeName]) {
             const badgeInfo = channelBadges[badgeName].versions[version];
-            if(badgeInfo){
+            if (badgeInfo) {
                 return {
                     src: badgeInfo.image_url_1x,
                     description: badgeInfo.description,
@@ -99,9 +99,9 @@ const r = () => {
                 };
             }
         }
-        else if(globalBadges[badgeName]){
+        else if (globalBadges[badgeName]) {
             const badgeInfo = globalBadges[badgeName].versions[version];
-            if(badgeInfo){
+            if (badgeInfo) {
                 return {
                     src: badgeInfo.image_url_1x,
                     description: badgeInfo.description,
@@ -128,17 +128,17 @@ const r = () => {
             const timeElement = createElement("span", { text: getTimeString(comment.content_offset_seconds), classList: ["time"] });
 
             const badgesToAppend = [];
-            if(comment.message.user_badges){
-                for(const badge of comment.message.user_badges){
+            if (comment.message.user_badges) {
+                for (const badge of comment.message.user_badges) {
                     const badgeInfo = getBadgeInfo(badge._id, badge.version);
-                    if(badgeInfo !== null){
+                    if (badgeInfo !== null) {
                         const badgeImageElement = document.createElement("img");
                         badgeImageElement.src = (badgeInfo.src);
                         badgeImageElement.alt = badgeInfo.description;
-    
+
                         let badgeElement = badgeImageElement;
-                        if(badgeInfo.clickUrl.length > 0){
-                            const badgeAnchorElement = createElement("a", {classList: ["badge"]});
+                        if (badgeInfo.clickUrl.length > 0) {
+                            const badgeAnchorElement = createElement("a", { classList: ["badge"] });
                             badgeAnchorElement.href = badgeInfo.clickUrl;
                             badgeAnchorElement.target = "_blank";
                             badgeAnchorElement.appendChild(badgeImageElement);
@@ -233,7 +233,7 @@ const r = () => {
             res.json().then((data) => {
                 comments = data.comments;
                 renderChat();
-                if(comments.length > 0){
+                if (comments.length > 0) {
                     fetch(`https://badges.twitch.tv/v1/badges/channels/${comments[0].channel_id}/display?language=en`).then((res) => {
                         res.json().then((data) => {
                             channelBadges = data.badge_sets;
