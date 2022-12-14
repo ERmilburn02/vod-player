@@ -136,15 +136,16 @@ const r = () => {
             });
 
             const commentMsgId = comment.message.user_notice_params;
-            if (commentMsgId["msg-id"] != undefined) {
-                commentElement.classList.add("Highlighted");
+            if (commentMsgId) {
+                if (commentMsgId["msg-id"] != undefined) {
+                    commentElement.classList.add("Highlighted");
+                }
+                
+                if (comment.message.is_action) {
+                    commentElement.classList.add("action");
+                }   
+                chatElement.appendChild(commentElement);
             }
-
-            if (comment.message.is_action) {
-                commentElement.classList.add("action");
-            }
-
-            chatElement.appendChild(commentElement);
         }
         scroll();
     };
