@@ -104,14 +104,15 @@ class Chat {
             });
 
             const commentMsgId = comment.message.user_notice_params;
-            if (commentMsgId["msg-id"] != undefined) {
-                commentElement.classList.add("Highlighted");
+            if (commentMsgId) {
+                if (commentMsgId["msg-id"] != undefined) {
+                    commentElement.classList.add("Highlighted");
+                }
+                if (comment.message.is_action) {
+                    commentElement.classList.add("action");
+                }   
             }
-
-            if (comment.message.is_action) {
-                commentElement.classList.add("action");
-            }
-
+            
             this.chatElement.appendChild(commentElement);
         }
         this.scroll();
