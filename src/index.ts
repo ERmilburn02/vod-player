@@ -6,8 +6,8 @@ const r = () => {
     const url = new URL(window.location.href);
     const mp4 = url.searchParams.get("mp4");
     const json = url.searchParams.get("json");
-    const timeMins = url.searchParams.get("mins");
-    const timeSecs = url.searchParams.get("secs");
+    const timeMins = url.searchParams.get("mins") || "0";
+    const timeSecs = url.searchParams.get("secs") || "0";
     const autoplay = url.searchParams.get("autoplay");
 
     if (!mp4) {
