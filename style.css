@@ -37,7 +37,7 @@ body {
 
 #chat {
     font-family: sans-serif;
-    height: calc(100vh - 2em);
+    height: calc(100vh - 4em);
     overflow-x: hidden;
     overflow-y: scroll;
     padding: 1em;
@@ -150,7 +150,7 @@ body {
     }
 
     #chat {
-        height: calc(65vh - 2em);
+        height: calc(65vh - 4em);
         width: calc(100vw - 2em);
     }
 }
